@@ -202,13 +202,24 @@ listCountries <-
     product <- Sys.getenv('product')
     token <- Sys.getenv('token')
 
-    listCountries <- httr::content(
-      httr::POST(url = "https://api.betfair.com/exchange/betting/json-rpc/v1",
-                 config = httr::config(ssl_verifypeer = sslVerify),
-                 body = listCountriesOps,
-                 httr::add_headers(Accept = "application/json", `X-Application` = product, `X-Authentication` = token)
+    listCountries <-
+      jsonlite::fromJSON(
+        httr::content(
+          httr::POST(
+            url = "https://api.betfair.com/exchange/betting/json-rpc/v1",
+            config = httr::config(
+              ssl_verifypeer = sslVerify
+            ),
+            body = listCountriesOps,
+            httr::add_headers(
+              Accept = "application/json",
+              `X-Application` = product,
+              `X-Authentication` = token)
+          ),
+          as = "text",
+          encoding = "UTF-8"
+        )
       )
-    )
 
     if(is.null(listCountries$error))
       as.data.frame(listCountries$result[1])
