@@ -217,13 +217,26 @@ listEvents <-
     )
 
     listEvents <-
-      as.list(jsonlite::fromJSON(
-        RCurl::postForm(
-          "https://api.betfair.com/exchange/betting/json-rpc/v1", .opts = list(
-            postfields = listEventsOps, httpheader = headers, ssl.verifypeer = sslVerify
+      as.list(
+        jsonlite::fromJSON(
+          httr::content(
+            httr::POST(
+              url = "https://api.betfair.com/exchange/betting/json-rpc/v1",
+              config = httr::config(
+                ssl_verifypeer = sslVerify
+              ),
+              body = listEventsOps,
+              httr::add_headers(
+                Accept = "application/json",
+                `X-Application` = product,
+                `X-Authentication` = token)
+            ),
+            as = "text",
+            encoding = "UTF-8"
           )
         )
-      ))
+      )
+
 
     if(is.null(listEvents$error))
       as.data.frame(listEvents$result[1])

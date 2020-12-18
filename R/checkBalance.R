@@ -59,12 +59,17 @@ checkBalance <- function(suppress = FALSE, sslVerify = TRUE) {
   product <- Sys.getenv('product')
   token <- Sys.getenv('token')
 
-  balance <- httr::content(
-    httr::POST(url = "https://api.betfair.com/exchange/account/json-rpc/v1",
-                 config = httr::config(ssl_verifypeer = sslVerify),
-                 body = balanceOps,
-                 httr::add_headers(Accept = "application/json", `X-Application` = product, `X-Authentication` = token)
-               )
+  balance <-
+    jsonlite::fromJSON(
+      httr::content(
+        httr::POST(url = "https://api.betfair.com/exchange/account/json-rpc/v1",
+                   config = httr::config(ssl_verifypeer = sslVerify),
+                   body = balanceOps,
+                   httr::add_headers(Accept = "application/json", `X-Application` = product, `X-Authentication` = token)
+        ),
+        as = "text",
+        encoding = "UTF-8"
+      )
     )
 
   if(is.null(balance$error))

@@ -75,11 +75,13 @@ loginBF <-
     credentials <- paste0("username=", username, "&password=", password)
 
     loginReturn =  tryCatch(
-      httr::POST(url = "https://identitysso.betfair.com/api/login",
-                 config = httr::config(ssl_verifypeer = sslVerify),
-                 query = credentials,
-                 httr::add_headers(Accept = "application/json", `X-Application` = applicationKey))
-      ,error = function(cond) {
+      httr::POST(
+        url = "https://identitysso.betfair.com/api/login",
+        config = httr::config(ssl_verifypeer = sslVerify),
+        query = credentials,
+        httr::add_headers(Accept = "application/json", `X-Application` = applicationKey)
+        ),
+      error = function(cond) {
         print(cond)
         stop(cond)
       }

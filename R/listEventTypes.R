@@ -196,18 +196,28 @@ listEventTypes <-
     token <- Sys.getenv('token')
 
 
-    headers <- list(
-      'Accept' = 'application/json', 'X-Application' = product, 'X-Authentication' = token, 'Content-Type' = 'application/json'
-    )
-
     listEventTypes <-
-      as.list(jsonlite::fromJSON(
-        RCurl::postForm(
-          "https://api.betfair.com/exchange/betting/json-rpc/v1", .opts = list(
-            postfields = listEventTypesOps, httpheader = headers, ssl.verifypeer = sslVerify
+      as.list(
+        jsonlite::fromJSON(
+          httr::content(
+            httr::POST(
+              url = "https://api.betfair.com/exchange/betting/json-rpc/v1",
+              config = httr::config(
+                ssl_verifypeer = sslVerify
+              ),
+              body = listEventTypesOps,
+              httr::add_headers(
+                'Accept' = 'application/json',
+                'X-Application' = product,
+                'X-Authentication' = token,
+                'Content-Type' = 'application/json'
+              )
+            ),
+            as = "text",
+            encoding = "UTF-8"
           )
-        )
-      ))
+        ))
+
 
     if(is.null(listEventTypes$error))
       as.data.frame(listEventTypes$result[1])
